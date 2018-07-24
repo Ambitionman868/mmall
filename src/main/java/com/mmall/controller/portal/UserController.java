@@ -31,7 +31,7 @@ public class UserController {
      */
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
-    public Object login(String username, String password, HttpSession session) {
+    public ServerResponse<User> login(String username, String password, HttpSession session) {
 
         //service -> mybatis -> dao
 
@@ -62,12 +62,18 @@ public class UserController {
         return iUserService.register(user);
     }
 
+    @RequestMapping(value = "check_valid.do",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> checkValid(String str,String type){
+        return iUserService.checkValid(str,type);
+    }
+
 
     @RequestMapping(value = "get_user_info.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> checkValid(String str, String type) {
-        String user = TokenCache.getKey(Const.CURRENT_USER);
-        if (user != null) {
+    public ServerResponse<User> getUserInfo(HttpSession session){
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if(user != null){
             return ServerResponse.createBySuccess(user);
         }
         return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
